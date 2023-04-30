@@ -1,13 +1,18 @@
 import React, { useState } from "react";
-import Axios from "axios";
+import axios from "axios";
 import styled from "styled-components";
+import { Configuration, OpenAIApi } from "openai";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 
-const APP_ID = "d2ac2601";
-const APP_KEY = "1cd43e607f88446d07e49520349af810";
+const configuration = new Configuration({
+  organization: process.env.REACT_APP_OPENAI_ORGANIZATION,
+  apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(configuration);
 
 const RecipeContainer = styled.div`
   display: flex;
@@ -159,9 +164,14 @@ const AppComponent = () => {
   const [recipeList, updateRecipeList] = useState([]);
   const [timeoutId, updateTimeoutId] = useState();
   const fetchData = async (searchString) => {
-    const response = await Axios.get(
-      `https://api.edamam.com/search?q=${searchString}&app_id=${APP_ID}&app_key=${APP_KEY}`,
-    );
+    const response = await axios.get(`https://api.edamam.com/search`, {
+      params: {
+        q: searchString,
+        app_id: process.env.REACT_APP_EDAMAM_APP_ID,
+        app_key: process.env.REACT_APP_EDAMAM_API_KEY,
+      },
+    });
+
     updateRecipeList(response.data.hits);
   };
 
